@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamargaser Pro | Экономические системы</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --steam-dark: #1b2838;
+            --steam-darker: #171a21;
+            --steam-blue: #2a475e;
+            --steam-light-blue: #66c0f4;
+            --steam-text: #c7d5e0;
+            --steam-text-light: #ffffff;
+            --steam-accent: #f5f5f5;
+            --steam-green: #5ba32b;
+            --steam-orange: #e35e1c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--steam-dark);
+            color: var(--steam-text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(90deg, var(--steam-darker) 0%, var(--steam-blue) 100%);
+            padding: 1rem 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--steam-light-blue);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--steam-text-light);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--steam-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a:hover {
+            color: var(--steam-light-blue);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--steam-light-blue);
+            transition: width 0.3s;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(23, 26, 33, 0.8), rgba(23, 26, 33, 0.8)), 
+                        url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg') no-repeat center center;
+            background-size: cover;
+            padding: 4rem 2rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--steam-text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(90deg, var(--steam-blue) 0%, var(--steam-light-blue) 100%);
+            color: var(--steam-text-light);
+            border: none;
+            border-radius: 3px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--steam-darker);
+            border: 1px solid var(--steam-blue);
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background: var(--steam-darker);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(102, 192, 244, 0.2);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: var(--steam-light-blue);
+        }
+        
+        .card-img {
+            height: 120px;
+            background-color: var(--steam-blue);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card h3 {
+            color: var(--steam-light-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .card p {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(102, 192, 244, 0.1);
+        }
+        
+        .price {
+            font-weight: 600;
+            color: var(--steam-green);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--steam-text-light);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--steam-blue);
+        }
+        
+        /* Табличный редактор в стиле Steam */
+        .table-section {
+            background: var(--steam-darker);
+            border-radius: 4px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(102, 192, 244, 0.2);
+        }
+        
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            background: rgba(23, 26, 33, 0.7);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+        
+        .spreadsheet {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--steam-dark);
+        }
+        
+        .spreadsheet th {
+            background: var(--steam-blue);
+            color: var(--steam-text-light);
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 500;
+            border: 1px solid rgba(102, 192, 244, 0.3);
+            position: relative;
+        }
+        
+        .spreadsheet td {
+            padding: 0;
+            border: 1px solid rgba(102, 192, 244, 0.1);
+        }
+        
+        .spreadsheet td input {
+            width: 100%;
+            padding: 0.8rem;
+            background: transparent;
+            border: none;
+            color: var(--steam-text-light);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .spreadsheet td input:focus {
+            outline: none;
+            background: rgba(102, 192, 244, 0.1);
+        }
+        
+        .spreadsheet td.result-cell {
+            background: rgba(42, 71, 94, 0.3);
+            color: var(--steam-light-blue);
+            padding: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .formula-input {
+            display: block;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(102, 192, 244, 0.3);
+            color: var(--steam-light-blue);
+            padding: 0.3rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            border-radius: 2px;
+        }
+        
+        .formula-input:focus {
+            outline: none;
+            border-color: var(--steam-light-blue);
+        }
+        
+        .column-letter {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        footer {
+            background: var(--steam-darker);
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            color: var(--steam-light-blue);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-column a {
+            color: var(--steam-text);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--steam-light-blue);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(102, 192, 244, 0.1);
+            color: rgba(199, 213, 224, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span>ЭИС</span> Pro
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">Главная</a></li>
+                    <li><a href="#features">Возможности</a></li>
+                    <li><a href="#table">Таблицы</a></li>
+                    <li><a href="#solutions">Решения</a></li>
+                    <li><a href="#contacts">Контакты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section id="about" class="hero">
+            <h1>Профессиональные экономические системы</h1>
+            <p>Мощные инструменты для анализа данных, финансового моделирования и бизнес-аналитики в современном стиле</p>
+            <a href="#table" class="btn">Попробовать табличный редактор</a>
+        </section>
+
+        <section id="features">
+            <h2 class="section-title">Ключевые возможности</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>Финансовый анализ</h3>
+                        <p>Полный набор инструментов для анализа финансовых показателей и прогнозирования</p>
+                        <div class="card-footer">
+                            <span class="price">В комплекте</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>Бизнес-аналитика</h3>
+                        <p>Мощные инструменты визуализации данных и создания отчетов</p>
+                        <div class="card-footer">
+                            <span class="price">В комплекте</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>Управление проектами</h3>
+                        <p>Интегрированные инструменты для планирования и контроля проектов</p>
+                        <div class="card-footer">
+                            <span class="price">В комплекте</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="table" class="table-section">
+            <h2 class="section-title">Табличный редактор</h2>
+            <p>Создавайте и анализируйте данные с помощью нашего мощного редактора с поддержкой формул</p>
+            
+            <div class="table-controls">
+                <button id="add-col" class="btn">Добавить столбец</button>
+                <button id="add-row" class="btn">Добавить строку</button>
+                <button id="remove-col" class="btn btn-secondary">Удалить столбец</button>
+                <button id="remove-row" class="btn btn-secondary">Удалить строку</button>
+                <button id="export-excel" class="btn">Экспорт в Excel</button>
+                <button id="clear-table" class="btn btn-secondary">Очистить таблицу</button>
+            </div>
+            
+            <div class="table-container">
+                <table id="spreadsheet" class="spreadsheet">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span class="column-letter">A</span>
+                                <input type="text" class="formula-input" placeholder="Формула (например, =A1+B1)" value="">
+                            </th>
+                            <th>
+                                <span class="column-letter">B</span>
+                                <input type="text" class="formula-input" placeholder="Формула (например, =A1*2)" value="">
+                            </th>
+                            <th>
+                                <span class="column-letter">C</span>
+                                <input type="text" class="formula-input" placeholder="Формула (например, =A1+B1)" value="=A1+B1">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="100" data-formula="100"></td>
+                            <td><input type="text" value="200" data-formula="200"></td>
+                            <td class="result-cell">300</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="150" data-formula="150"></td>
+                            <td><input type="text" value="250" data-formula="250"></td>
+                            <td class="result-cell">400</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="solutions">
+            <h2 class="section-title">Готовые решения</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>ERP система</h3>
+                        <p>Полная автоматизация бизнес-процессов предприятия</p>
+                        <div class="card-footer">
+                            <span class="price">от 299 000 ₽</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>CRM система</h3>
+                        <p>Управление взаимоотношениями с клиентами</p>
+                        <div class="card-footer">
+                            <span class="price">от 149 000 ₽</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/593110/5c9b9e5d8e035d8104a3a0e9a7a9a9a9a9a9a9.jpg');"></div>
+                    <div class="card-content">
+                        <h3>BI аналитика</h3>
+                        <p>Бизнес-аналитика и визуализация данных</p>
+                        <div class="card-footer">
+                            <span class="price">от 199 000 ₽</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Компания</h3>
+                <ul>
+                    <li><a href="#">О нас</a></li>
+                    <li><a href="#">Карьера</a></li>
+                    <li><a href="#">Блог</a></li>
+                    <li><a href="#">Партнеры</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Продукты</h3>
+                <ul>
+                    <li><a href="#">ERP системы</a></li>
+                    <li><a href="#">CRM системы</a></li>
+                    <li><a href="#">BI аналитика</a></li>
+                    <li><a href="#">Табличные редакторы</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Поддержка</h3>
+                <ul>
+                    <li><a href="#">Документация</a></li>
+                    <li><a href="#">Форум</a></li>
+                    <li><a href="#">Обучение</a></li>
+                    <li><a href="#">Контакты</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Контакты</h3>
+                <ul>
+                    <li>Москва, ул. Технологическая, 42</li>
+                    <li>info@eis-pro.ru</li>
+                    <li>+7 (495) 123-45-67</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 ЭИС Pro. Все права защищены.
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const spreadsheet = document.getElementById('spreadsheet');
+            const addColBtn = document.getElementById('add-col');
+            const addRowBtn = document.getElementById('add-row');
+            const removeColBtn = document.getElementById('remove-col');
+            const removeRowBtn = document.getElementById('remove-row');
+            const exportExcelBtn = document.getElementById('export-excel');
+            const clearTableBtn = document.getElementById('clear-table');
+            
+            let currentColIndex = 3; // Начинаем с D (после A,B,C)
+            let currentRowIndex = 3; // Начинаем с 3 строки (уже есть 1 и 2)
+            
+            // Функция для получения буквы столбца по индексу
+            function getColumnLetter(index) {
+                let letter = '';
+                while (index >= 0) {
+                    letter = String.fromCharCode(65 + (index % 26)) + letter;
+                    index = Math.floor(index / 26) - 1;
+                }
+                return letter;
+            }
+            
+            // Обновление всех формул в таблице
+            function updateAllFormulas() {
+                const rows = spreadsheet.querySelectorAll('tbody tr');
+                rows.forEach((row, rowIndex) => {
+                    const cells = row.querySelectorAll('td');
+                    cells.forEach((cell, cellIndex) => {
+                        if (cell.classList.contains('result-cell')) {
+                            const formulaInput = spreadsheet.querySelector(`thead th:nth-child(${cellIndex + 1}) .formula-input`);
+                            if (formulaInput && formulaInput.value.startsWith('=')) {
+                                const formula = formulaInput.value;
+                                const result = calculateFormula(formula, rowIndex + 1);
+                                cell.textContent = result;
+                            } else {
+                                cell.textContent = '';
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // Вычисление формулы
+            function calculateFormula(formula, rowNum) {
+                try {
+                    let expression = formula.substring(1);
+                    
+                    // Заменяем ссылки на ячейки (A1, B2 и т.д.) на их значения
+                    const cellRefRegex = /([A-Z]+)(\d+)/g;
+                    let match;
+                    while ((match = cellRefRegex.exec(expression)) !== null) {
+                        const colLetter = match[1];
+                        const refRowNum = match[2];
+                        
+                        // Если ссылка на текущую строку, используем rowNum
+                        const targetRowNum = refRowNum === '1' || refRowNum === '2' ? refRowNum : rowNum;
+                        
+                        const colIndex = Array.from(spreadsheet.querySelectorAll('thead th'))
+                            .findIndex(th => {
+                                const letter = th.querySelector('.column-letter').textContent;
+                                return letter === colLetter;
+                            });
+                            
+                        if (colIndex !== -1) {
+                            const inputCell = spreadsheet.querySelector(`tbody tr:nth-child(${targetRowNum}) td:nth-child(${colIndex + 1}) input`);
+                            if (inputCell) {
+                                const value = inputCell.getAttribute('data-formula') || inputCell.value;
+                                expression = expression.replace(new RegExp(colLetter + refRowNum, 'g'), value);
+                            }
+                        }
+                    }
+                    
+                    // Вычисляем результат
+                    const result = eval(expression);
+                    return isNaN(result) ? '#ОШИБКА' : result;
+                } catch (error) {
+                    console.error('Ошибка вычисления формулы:', error);
+                    return '#ОШИБКА';
+                }
+            }
+            
+            // Добавление столбца
+            addColBtn.addEventListener('click', function() {
+                const headerRow = spreadsheet.querySelector('thead tr');
+                const newHeader = document.createElement('th');
+                const colLetter = getColumnLetter(currentColIndex);
+                
+                newHeader.innerHTML = `
+                    <span class="column-letter">${colLetter}</span>
+                    <input type="text" class="formula-input" placeholder="Формула (например, =A1+B1)" value="">
+                `;
+                
+                headerRow.appendChild(newHeader);
+                
+                // Обработка изменений в формуле
+                const formulaInput = newHeader.querySelector('.formula-input');
+                formulaInput.addEventListener('input', function() {
+                    updateAllFormulas();
+                });
+                
+                const rows = spreadsheet.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const newCell = document.createElement('td');
+                    newCell.classList.add('result-cell');
+                    newCell.textContent = '0';
+                    row.appendChild(newCell);
+                });
+                
+                currentColIndex++;
+                updateAllFormulas();
+            });
+            
+            // Добавление строки
+            addRowBtn.addEventListener('click', function() {
+                const newRow = document.createElement('tr');
+                const colsCount = spreadsheet.querySelector('thead tr').children.length;
+                
+                for (let i = 0; i < colsCount; i++) {
+                    const newCell = document.createElement('td');
+                    const header = spreadsheet.querySelector(`thead th:nth-child(${i + 1})`);
+                    const formulaInput = header.querySelector('.formula-input');
+                    
+                    if (formulaInput && formulaInput.value.startsWith('=')) {
+                        newCell.classList.add('result-cell');
+                        const formula = formulaInput.value;
+                        const result = calculateFormula(formula, currentRowIndex);
+                        newCell.textContent = result;
+                    } else {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.setAttribute('data-formula', '0');
+                        input.value = '0';
+                        newCell.appendChild(input);
+                        
+                        input.addEventListener('input', function() {
+                            this.setAttribute('data-formula', this.value);
+                            updateAllFormulas();
+                        });
+                    }
+                    
+                    newRow.appendChild(newCell);
+                }
+                
+                spreadsheet.querySelector('tbody').appendChild(newRow);
+                currentRowIndex++;
+            });
+            
+            // Удаление столбца
+            removeColBtn.addEventListener('click', function() {
+                const headerRow = spreadsheet.querySelector('thead tr');
+                if (headerRow.children.length <= 1) return;
+                
+                headerRow.removeChild(headerRow.lastChild);
+                
+                const rows = spreadsheet.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    if (row.children.length > 1) {
+                        row.removeChild(row.lastChild);
+                    }
+                });
+                
+                currentColIndex--;
+                updateAllFormulas();
+            });
+            
+            // Удаление строки
+            removeRowBtn.addEventListener('click', function() {
+                const tbody = spreadsheet.querySelector('tbody');
+                if (tbody.children.length <= 1) return;
+                
+                tbody.removeChild(tbody.lastChild);
+                currentRowIndex--;
+            });
+            
+            // Очистка таблицы (оставляет 3x2)
+            clearTableBtn.addEventListener('click', function() {
+                const tbody = spreadsheet.querySelector('tbody');
+                tbody.innerHTML = '';
+                
+                // Очищаем формулы в заголовках
+                const formulaInputs = spreadsheet.querySelectorAll('.formula-input');
+                formulaInputs.forEach((input, index) => {
+                    if (index === 2) {
+                        input.value = '=A1+B1'; // Оставляем формулу для столбца C
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                // Создаем 2 строки
+                for (let i = 0; i < 2; i++) {
+                    const newRow = document.createElement('tr');
+                    
+                    for (let j = 0; j < 3; j++) {
+                        const newCell = document.createElement('td');
+                        const header = spreadsheet.querySelector(`thead th:nth-child(${j + 1})`);
+                        const formulaInput = header.querySelector('.formula-input');
+                        
+                        if (formulaInput && formulaInput.value.startsWith('=')) {
+                            newCell.classList.add('result-cell');
+                            const formula = formulaInput.value;
+                            const result = calculateFormula(formula, i + 1);
+                            newCell.textContent = result;
+                        } else {
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            const defaultValue = j === 0 ? (i === 0 ? '100' : '150') : (i === 0 ? '200' : '250');
+                            input.setAttribute('data-formula', defaultValue);
+                            input.value = defaultValue;
+                            newCell.appendChild(input);
+                            
+                            input.addEventListener('input', function() {
+                                this.setAttribute('data-formula', this.value);
+                                updateAllFormulas();
+                            });
+                        }
+                        
+                        newRow.appendChild(newCell);
+                    }
+                    
+                    tbody.appendChild(newRow);
+                }
+                
+                currentColIndex = 3;
+                currentRowIndex = 3;
+            });
+            
+            // Обработка изменений в формулах заголовков
+            const formulaInputs = spreadsheet.querySelectorAll('.formula-input');
+            formulaInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    updateAllFormulas();
+                });
+            });
+            
+            // Обработка изменений в ячейках
+            const inputs = spreadsheet.querySelectorAll('td input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.setAttribute('data-formula', this.value);
+                    updateAllFormulas();
+                });
+            });
+            
+            // Экспорт в Excel
+            exportExcelBtn.addEventListener('click', function() {
+                const wb = XLSX.utils.book_new();
+                const wsData = [];
+                
+                // Заголовки столбцов
+                const headers = Array.from(spreadsheet.querySelectorAll('thead th .column-letter'))
+                    .map(letter => letter.textContent);
+                wsData.push(headers);
+                
+                // Данные строк
+                const rows = spreadsheet.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('td');
+                    
+                    cells.forEach(cell => {
+                        if (cell.classList.contains('result-cell')) {
+                            rowData.push(cell.textContent);
+                        } else {
+                            const input = cell.querySelector('input');
+                            rowData.push(input.getAttribute('data-formula') || input.value);
+                        }
+                    });
+                    
+                    wsData.push(rowData);
+                });
+                
+                // Формулы
+                const formulas = Array.from(spreadsheet.querySelectorAll('thead th .formula-input'))
+                    .map(input => input.value.startsWith('=') ? input.value : '');
+                
+                if (formulas.some(f => f)) {
+                    wsData.push([]);
+                    wsData.push(['Формулы:', ...formulas]);
+                }
+                
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                XLSX.utils.book_append_sheet(wb, ws, "Таблица");
+                
+                // Генерация имени файла с датой
+                const date = new Date();
+                const dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                XLSX.writeFile(wb, `ЭИС_Таблица_${dateStr}.xlsx`);
+            });
+            
+            // Инициализация формул
+            updateAllFormulas();
+        });
+    </script>
+</body>
+</html>
